@@ -1,14 +1,13 @@
-import 'package:bvrit/screens/students/granted_screen.dart';
-import 'package:bvrit/screens/students/permission_details.dart';
-import 'package:bvrit/screens/students/profile_screen.dart';
+import 'package:bvrit/screens/admins/edit_profile_screen.dart';
+import 'package:bvrit/screens/admins/granted_permissions.dart';
+import 'package:bvrit/screens/admins/permission_details.dart';
+import 'package:bvrit/screens/admins/profile_screen.dart';
 import 'package:bvrit/screens/students/request_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import '../../main.dart';
 import '../../widgets/requesttile.dart';
-import 'edit_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -119,12 +118,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.center,
                   children: [
                     Positioned(
-                      top: height * 0.1,
+                      top: height * 0.15,
                       child: Container(
                         height: height * 0.7 + height * 0.15 * itemcount,
                         width: width,
                         decoration: BoxDecoration(
-                          // borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(25),
                           color: Color(0xffCAF0F8),
                         ),
                         child: Column(
@@ -133,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: width * 0.2,
                             ),
                             Text(
-                              "Mahesh Alyana",
+                              "USERNAME",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 25,
@@ -142,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             Text(
-                              "20211A6604",
+                              "EMP ID",
                               style: TextStyle(
                                 color: Color(0xad000000),
                                 fontSize: 15,
@@ -157,46 +156,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontSize: 15,
                                 fontFamily: "Barlow",
                                 fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            Container(
-                              width: width * 0.85,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color(0x3f000000),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                                color: const Color(0xff03045e),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: MaterialButton(
-                                  onPressed: () {
-                                    Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                RequestScreen()),
-                                        (route) => true);
-                                  },
-                                  child: const Text(
-                                    "REQUEST FOR PERMISSION",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontFamily: "Barlow",
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ),
                             const SizedBox(
@@ -235,8 +194,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: Center(
                                                   child: Text(
                                                 _isRequested
-                                                    ? "         "
-                                                    : "REQUESTED",
+                                                    ? "           "
+                                                    : "PERMISSIONS",
                                                 style: TextStyle(
                                                   color: _isRequested
                                                       ? Colors.white
@@ -261,8 +220,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: Center(
                                                   child: Text(
                                                 _isGranted
-                                                    ? "       "
-                                                    : "GRANTED",
+                                                    ? "        "
+                                                    : "GRANETED",
                                                 style: TextStyle(
                                                   color: _isGranted
                                                       ? Colors.white
@@ -295,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           child: Center(
                                               child: Text(
                                             _isRequested == true
-                                                ? "REQUESTED"
+                                                ? "PERMISSIONS"
                                                 : "GRANTED",
                                             style: TextStyle(
                                               fontFamily: "Barlow",
@@ -318,19 +277,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                   itemCount: itemcount,
                                   itemBuilder: (context, index) {
                                     return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => _isGranted
-                                                        ? GrantedDetailsScreen()
-                                                        : PermissionDetailsScreen()),
-                                                (route) => true);
-                                          },
-                                          child: StudentRequestTile(),
-                                        ));
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          _isRequested
+                                              ? Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PermissionDetailsScreen()),
+                                                  (route) => true)
+                                              : Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          GrantedPermissionDetailsScreen()),
+                                                  (route) => true);
+                                        },
+                                        child: AdminRequestTile(),
+                                      ),
+                                    );
                                   }),
                             )
                           ],
@@ -338,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Positioned(
-                      top: height * 0.02,
+                      top: height * 0.07,
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pushAndRemoveUntil(
@@ -361,10 +327,39 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: Image.asset(
-                              "assets/images/profile.jpeg",
+                              "assets/images/admin.png",
                               fit: BoxFit.cover,
                             ),
                           ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: height * 0.12,
+                      right: width * 0.05,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xff03045E),
+                          border: Border.all(
+                            width: 2,
+                            color: const Color(0xffCAF0F8),
+                          ),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditProfileScreen()),
+                                (route) => true);
+                          },
                         ),
                       ),
                     ),

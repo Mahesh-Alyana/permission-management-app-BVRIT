@@ -47,24 +47,27 @@ class _RequestScreenState extends State<RequestScreen> {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffCAF0F8),
+        toolbarHeight: height * 0.1,
+        backgroundColor: Color(0xff03045e),
         centerTitle: true,
         elevation: 0,
         title: const Text(
           "REQUEST A PERMISSION",
           style: TextStyle(
-            color: Color(0xff03045e),
+            color: Color.fromARGB(255, 255, 255, 255),
             fontSize: 20,
             fontFamily: "Barlow",
             fontWeight: FontWeight.w600,
           ),
         ),
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: SvgPicture.asset("assets/images/backIcon.svg"),
-        ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.white,
+            )),
       ),
       backgroundColor: const Color(0xffCAF0F8),
       body: ListView(
@@ -77,33 +80,23 @@ class _RequestScreenState extends State<RequestScreen> {
                 //   height: height * 0.02,
                 // ),
                 SizedBox(
-                  height: height * 0.08,
+                  height: height * 0.05,
                 ),
                 SizedBox(
                   height: height * 0.7,
                   width: width * 0.9,
                   child: Column(
                     children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "FROM",
-                          style: TextStyle(
-                            color: const Color(0xff03045e),
-                            fontSize: width * 0.04,
-                            fontFamily: "Barlow",
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
                       Container(
                         height: height * 0.07,
                         width: width * 0.85,
-                        decoration: const BoxDecoration(
-                          color: Color(0xffffffff),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Color(0xff03045e),
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Color(0xffCAF0F8),
                         ),
                         child: Center(
                           child: ListTile(
@@ -120,12 +113,18 @@ class _RequestScreenState extends State<RequestScreen> {
                       Container(
                         height: height * 0.07,
                         width: width * 0.85,
-                        decoration: const BoxDecoration(
-                          color: Color(0xffffffff),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Color(0xff03045e),
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Color(0xffCAF0F8),
                         ),
                         child: Center(
                           child: ListTile(
-                            title: Text("Time: ${time.hour}:${time.minute}"),
+                            title:
+                                Text("From Time: ${time.hour}:${time.minute}"),
                             trailing: const Icon(Icons.keyboard_arrow_down),
                             onTap: _pickTime,
                           ),
@@ -134,48 +133,24 @@ class _RequestScreenState extends State<RequestScreen> {
                       const SizedBox(
                         height: 15,
                       ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "TO",
-                          style: TextStyle(
-                            color: Color(0xff03045e),
-                            fontSize: width * 0.04,
-                            fontFamily: "Barlow",
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        height: height * 0.07,
-                        width: width * 0.85,
-                        decoration: const BoxDecoration(
-                          color: Color(0xffffffff),
-                        ),
-                        child: Center(
-                          child: ListTile(
-                            title: Text(
-                                "Date: ${pickedDate.year}, ${pickedDate.month}, ${pickedDate.day}"),
-                            trailing: const Icon(Icons.keyboard_arrow_down),
-                            onTap: _pickDate,
-                          ),
-                        ),
-                      ),
                       SizedBox(
                         height: height * 0.02,
                       ),
                       Container(
                         height: height * 0.07,
                         width: width * 0.85,
-                        decoration: const BoxDecoration(
-                          color: Color(0xffffffff),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Color(0xff03045e),
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Color(0xffCAF0F8),
                         ),
                         child: Center(
                           child: ListTile(
-                            title: Text("Time: ${time.hour}:${time.minute}"),
+                            title: Text(
+                                "To Time: ${time.hour}:${time.minute}              (optional)"),
                             trailing: const Icon(Icons.keyboard_arrow_down),
                             onTap: _pickTime,
                           ),
@@ -202,7 +177,14 @@ class _RequestScreenState extends State<RequestScreen> {
                       Container(
                         height: height * 0.15,
                         width: width * 0.85,
-                        color: Colors.white,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Color(0xff03045e),
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Color(0xffCAF0F8),
+                        ),
                         child: TextFormField(
                           maxLines: 5,
                           decoration: InputDecoration(
@@ -218,6 +200,58 @@ class _RequestScreenState extends State<RequestScreen> {
                               borderSide: BorderSide.none,
                             ),
                           ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: [
+                            Text(
+                              "PROOF",
+                              style: TextStyle(
+                                  fontFamily: 'Barlow',
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: width * 0.038,
+                                  color: Color(0xff000000)),
+                            ),
+                            Text(
+                              "  (If any)",
+                              style: TextStyle(
+                                  fontFamily: 'Barlow',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: width * 0.025,
+                                  color: Color(0xff000000)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        height: height * 0.07,
+                        width: width * 0.85,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Color(0xff03045e),
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Color(0xffCAF0F8),
+                        ),
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                              width: width * 0.3,
+                              height: 35,
+                              decoration: BoxDecoration(
+                                // borderRadius: BorderRadius.circular(40),
+                                color: Color(0x727abbea),
+                              ),
+                              child: Icon(Icons.file_upload_outlined)),
                         ),
                       )
                     ],
@@ -243,7 +277,7 @@ class _RequestScreenState extends State<RequestScreen> {
                     child: MaterialButton(
                       onPressed: () {},
                       child: const Text(
-                        "REQUEST A PERMISSION",
+                        "REQUEST FOR PERMISSION",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,

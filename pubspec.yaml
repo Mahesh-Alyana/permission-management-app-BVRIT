@@ -38,6 +38,12 @@ dependencies:
   image_picker: 
   path_provider: 
   path: 
+  firebase_core: ^1.13.1
+  firebase_messaging: ^11.2.11
+  flutter_local_notifications: ^9.4.0
+  file_picker:
+  open_file: 
+  qr_code_scanner: 
 
 dev_dependencies:
   flutter_test:

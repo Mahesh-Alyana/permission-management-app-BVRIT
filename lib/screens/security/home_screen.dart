@@ -1,4 +1,4 @@
-import 'package:bvrit/screens/students/granted_screen.dart';
+import 'package:bvrit/screens/security/scan_qr.dart';
 import 'package:bvrit/screens/students/permission_details.dart';
 import 'package:bvrit/screens/students/profile_screen.dart';
 import 'package:bvrit/screens/students/request_screen.dart';
@@ -8,7 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../main.dart';
 import '../../widgets/requesttile.dart';
-import 'edit_profile_screen.dart';
+import '../admins/edit_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -119,12 +119,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.center,
                   children: [
                     Positioned(
-                      top: height * 0.1,
+                      top: height * 0.15,
                       child: Container(
                         height: height * 0.7 + height * 0.15 * itemcount,
                         width: width,
                         decoration: BoxDecoration(
-                          // borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(25),
                           color: Color(0xffCAF0F8),
                         ),
                         child: Column(
@@ -133,30 +133,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: width * 0.2,
                             ),
                             Text(
-                              "Mahesh Alyana",
+                              "USERNAME",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 25,
                                 fontFamily: "Barlow",
                                 fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              "20211A6604",
-                              style: TextStyle(
-                                color: Color(0xad000000),
-                                fontSize: 15,
-                                fontFamily: "Barlow",
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              "CSM",
-                              style: TextStyle(
-                                color: Color(0xad000000),
-                                fontSize: 15,
-                                fontFamily: "Barlow",
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             const SizedBox(
@@ -183,12 +165,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                RequestScreen()),
+                                            builder: (context) => ScanScreen()),
                                         (route) => true);
                                   },
                                   child: const Text(
-                                    "REQUEST FOR PERMISSION",
+                                    "SCAN",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
@@ -202,115 +183,24 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(
                               height: 30,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
+                            SizedBox(
                                 width: width * 0.9,
-                                height: 57,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: const Color(0x33000000),
-                                ),
-                                child: Stack(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      width: width * 0.9,
-                                      height: 57,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () => _request(),
-                                            child: Container(
-                                              height: height * 0.045,
-                                              width: width * 0.38,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: Colors.transparent,
-                                              ),
-                                              child: Center(
-                                                  child: Text(
-                                                _isRequested
-                                                    ? "         "
-                                                    : "REQUESTED",
-                                                style: TextStyle(
-                                                  color: _isRequested
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  fontSize: 20,
-                                                  fontFamily: "Barlow",
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              )),
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () => _granted(),
-                                            child: Container(
-                                              height: height * 0.045,
-                                              width: width * 0.38,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: Colors.transparent,
-                                              ),
-                                              child: Center(
-                                                  child: Text(
-                                                _isGranted
-                                                    ? "       "
-                                                    : "GRANTED",
-                                                style: TextStyle(
-                                                  color: _isGranted
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  fontSize: 20,
-                                                  fontFamily: "Barlow",
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              )),
-                                            ),
-                                          )
-                                        ],
+                                    Text(
+                                      "HISTORY",
+                                      style: TextStyle(
+                                        color: Color(0xff03045e),
+                                        fontSize: 20,
+                                        fontFamily: "Barlow",
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: AnimatedAlign(
-                                        alignment: _isRequested == true
-                                            ? Alignment.centerLeft
-                                            : Alignment.centerRight,
-                                        duration: Duration(milliseconds: 200),
-                                        child: Container(
-                                          width: width * 0.43,
-                                          height: 42,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Color(0xff03045e),
-                                          ),
-                                          child: Center(
-                                              child: Text(
-                                            _isRequested == true
-                                                ? "REQUESTED"
-                                                : "GRANTED",
-                                            style: TextStyle(
-                                              fontFamily: "Barlow",
-                                              color: Color(0xFFFFFFFF),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: width * 0.04,
-                                            ),
-                                          )),
-                                        ),
-                                      ),
-                                    ),
+                                    Icon(Icons.filter_alt_outlined)
                                   ],
-                                ),
-                              ),
-                            ),
+                                )),
                             Container(
                               height: height * 0.15 * itemcount,
                               child: ListView.builder(
@@ -324,9 +214,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             Navigator.pushAndRemoveUntil(
                                                 context,
                                                 MaterialPageRoute(
-                                                    builder: (context) => _isGranted
-                                                        ? GrantedDetailsScreen()
-                                                        : PermissionDetailsScreen()),
+                                                    builder: (context) =>
+                                                        PermissionDetailsScreen()),
                                                 (route) => true);
                                           },
                                           child: StudentRequestTile(),
@@ -338,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Positioned(
-                      top: height * 0.02,
+                      top: height * 0.07,
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pushAndRemoveUntil(
@@ -365,6 +254,35 @@ class _HomeScreenState extends State<HomeScreen> {
                               fit: BoxFit.cover,
                             ),
                           ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: height * 0.12,
+                      right: width * 0.05,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xff03045E),
+                          border: Border.all(
+                            width: 2,
+                            color: const Color(0xffCAF0F8),
+                          ),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditProfileScreen()),
+                                (route) => true);
+                          },
                         ),
                       ),
                     ),
