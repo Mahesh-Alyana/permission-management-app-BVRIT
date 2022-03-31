@@ -1,6 +1,9 @@
+import 'package:bvrit/screens/admins/profile_screen.dart';
 import 'package:bvrit/screens/students/auth/login_screen.dart';
 import 'package:bvrit/screens/students/home_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../../../api/auth_api.dart';
 
 class SignUpPassword extends StatefulWidget {
   const SignUpPassword({Key? key}) : super(key: key);
@@ -10,6 +13,11 @@ class SignUpPassword extends StatefulWidget {
 }
 
 class _SignUpPasswordState extends State<SignUpPassword> {
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
+
+  TextEditingController _emailTC = TextEditingController();
+  TextEditingController _passwordTC = TextEditingController();
+  TextEditingController _repasswordTC = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -188,10 +196,15 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SignUpDetails()),
+                                  builder: (context) => SignUpDetails(
+                                    confirmPassword: _repasswordTC.text,
+                                    email: _emailTC.text,
+                                    password: _passwordTC.text,
+                                  ),
+                                ),
                                 (route) => true);
                           },
-                          child: Center(
+                          child: const Center(
                             child: Text(
                               "Next",
                               style: TextStyle(
@@ -260,13 +273,26 @@ class _SignUpPasswordState extends State<SignUpPassword> {
 }
 
 class SignUpDetails extends StatefulWidget {
-  const SignUpDetails({Key? key}) : super(key: key);
+  late String email;
+  late String password;
+  late String confirmPassword;
+  SignUpDetails(
+      {Key? key,
+      required this.confirmPassword,
+      required this.email,
+      required this.password})
+      : super(key: key);
 
   @override
   State<SignUpDetails> createState() => _SignUpDetailsState();
 }
 
 class _SignUpDetailsState extends State<SignUpDetails> {
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
+
+  TextEditingController _rollNo = TextEditingController();
+  TextEditingController _firstName = TextEditingController();
+  TextEditingController _lastName = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -441,16 +467,47 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(30),
                         child: MaterialButton(
-                          onPressed: () {
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SignUpcontactinfo()),
-                                (route) => true);
+                          onPressed: () async {
+                            // if (formkey.currentState!.validate()) {
+                            //   showDialog(
+                            //       barrierDismissible: false,
+                            //       useRootNavigator: false,
+                            //       context: context,
+                            //       builder: (context) {
+                            //         return Center(
+                            //           child: CircularProgressIndicator(
+                            //             color: Color(0xFFFF0000),
+                            //           ),
+                            //         );
+                            //       });
+                            //   await createUserSignup(
+                            //       widget.email,
+                            //       widget.password,
+                            //       widget.confirmPassword,
+                            //       _firstName.text,
+                            //       _lastName.text);
+                            // }
+                            showDialog(
+                                barrierDismissible: false,
+                                useRootNavigator: false,
+                                context: context,
+                                builder: (context) {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFFFF0000),
+                                    ),
+                                  );
+                                });
+                            await createUserSignup(
+                                widget.email,
+                                widget.password,
+                                widget.confirmPassword,
+                                _firstName.text,
+                                _lastName.text);
                           },
                           child: Center(
                             child: Text(
-                              "Next",
+                              "Sign Up",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -514,6 +571,26 @@ class _SignUpDetailsState extends State<SignUpDetails> {
           ],
         ));
   }
+
+  Future<void> createUserSignup(String email, String password,
+      String confirmPassword, String firstName, String lastName) async {
+    final response = await AuthApi.signUp(
+        email, password, confirmPassword, firstName, lastName);
+    if (response != null) {
+      if (response == '400') {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return Container(
+                child: Text("Email is already avaliable"),
+              );
+            });
+      }
+      print(response);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    }
+  }
 }
 
 class SignUpcontactinfo extends StatefulWidget {
@@ -524,6 +601,10 @@ class SignUpcontactinfo extends StatefulWidget {
 }
 
 class _SignUpcontactinfoState extends State<SignUpcontactinfo> {
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  TextEditingController _contactNo1 = TextEditingController();
+  TextEditingController _contactNo2 = TextEditingController();
+  TextEditingController _hosteler = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;

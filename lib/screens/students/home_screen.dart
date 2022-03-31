@@ -1,10 +1,13 @@
+import 'package:bvrit/providers/profile_details_repository.dart';
 import 'package:bvrit/screens/students/granted_screen.dart';
 import 'package:bvrit/screens/students/permission_details.dart';
 import 'package:bvrit/screens/students/profile_screen.dart';
 import 'package:bvrit/screens/students/request_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import '../../main.dart';
 import '../../widgets/requesttile.dart';
 import 'edit_profile_screen.dart';
@@ -17,6 +20,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var _init = true;
+  var _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_init) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<ProfileProvider>(context).getProductList().then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _init = false;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -103,6 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var profile = Provider.of<ProfileProvider>(context).profile;
+
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -132,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: width * 0.2,
                             ),
                             Text(
-                              "Mahesh Alyana",
+                              "${profile.firstName} ${profile.lastName}",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 25,
@@ -141,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             Text(
-                              "20211A6604",
+                              "${profile.rollNo}",
                               style: TextStyle(
                                 color: Color(0xad000000),
                                 fontSize: 15,
@@ -150,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             Text(
-                              "CSM",
+                              "${profile.branch}",
                               style: TextStyle(
                                 color: Color(0xad000000),
                                 fontSize: 15,
@@ -359,10 +383,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(100),
-                            child: Image.asset(
-                              "assets/images/profile.jpeg",
-                              fit: BoxFit.cover,
-                            ),
+                            // child: Image.asset(
+                            //   "assets/images/profile.jpeg",
+                            //   fit: BoxFit.cover,
+                            // ),
+                            child: CachedNetworkImage(
+                                imageUrl: '${profile.dp}', fit: BoxFit.contain),
                           ),
                         ),
                       ),
