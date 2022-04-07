@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bvrit/api/profileservices.dart';
 import 'package:bvrit/screens/students/home_screen.dart';
 import 'package:bvrit/screens/students/auth/signup.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:http/http.dart' as http;
 import '../../../api/api_services.dart';
 import '../../../models/login_request_model.dart';
 import '../../../models/login_response_model.dart';
+import '../../../models/profile_data.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -32,9 +34,38 @@ class _LoginScreenState extends State<LoginScreen> {
           await SharedPreferences.getInstance();
       sharedPreferences.setString("token", output['access']);
       print(output['access']);
+      var profile = await ProfileDetails.profile();
+      final responseData = json.decode(profile.body);
+
+      ProfileEntity repo = ProfileEntity(
+        id: responseData["id"],
+        firstName: responseData['first_name'],
+        lastName: responseData['last_name'],
+        email: responseData['email'],
+        branch: responseData['branch'],
+        dp: responseData['dp'],
+        grantedby: responseData['grantedby'],
+        hostler: responseData['hosteler'],
+        parentPhone: responseData['parent_phone'],
+        rollNo: responseData['roll_no'],
+        studentPhone: responseData['student_phone'],
+        typeOfAccount: responseData['type_of_account'],
+      );
+      sharedPreferences.setString(
+        "roll",
+        "${repo.rollNo}",
+      );
+      sharedPreferences.setString(
+        "id",
+        "${repo.id}",
+      );
+      sharedPreferences.setString(
+        "password",
+        password,
+      );
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
           (route) => false);
       return LoginResponseModel.fromJson(
         json.decode(response.body),

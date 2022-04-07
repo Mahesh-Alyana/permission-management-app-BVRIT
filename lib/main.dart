@@ -129,7 +129,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: ProfileProvider()),
-        ChangeNotifierProvider.value(value: GrantedPermissionListProvider()),
+        ChangeNotifierProvider.value(value: RequestedPermissionListProvider()),
         ChangeNotifierProvider.value(value: PermissionProvider()),
         ChangeNotifierProvider.value(value: GrantedPermissionListProvider()),
       ],

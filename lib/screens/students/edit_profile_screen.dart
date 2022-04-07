@@ -1,14 +1,11 @@
-import 'package:bvrit/screens/students/granted_screen.dart';
-import 'package:bvrit/screens/students/permission_details.dart';
-import 'package:bvrit/screens/students/profile_screen.dart';
-import 'package:bvrit/screens/students/request_screen.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:convert';
 
-import '../../main.dart';
-import '../../widgets/requesttile.dart';
-import 'edit_profile_screen.dart';
+import 'package:bvrit/models/profile_data.dart';
+import 'package:bvrit/screens/students/home_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../api/api_services.dart';
+import 'package:http/http.dart' as http;
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -18,6 +15,87 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  Future<ProfileEntity> editProfile() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String token = sharedPreferences.getString('token').toString();
+    String password = sharedPreferences.getString('password').toString();
+    String url = "${Api.host}/auth/users/me/";
+
+    var map = new Map<dynamic, dynamic>();
+    map["first_name"] = firstName.text;
+    map["last_name"] = lastName.text;
+    map["roll_no"] = rollNo.text;
+    map["branch"] = branch.text;
+    map["hosteler"] = hosteler;
+    // map["dp"] = ;
+    map["parent_phone"] = parentPhone.text;
+    map["student_phone"] = studentPhone.text;
+    map["password"] = password;
+    // map["granted"] = "false";
+    // map["qrCode"] = "null";
+    final response = await http.post(Uri.parse(url),
+        headers: {
+          // 'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          "Authorization": "JWT $token",
+        },
+        // body: jsonEncode(requestModel.toJson()));
+        // body: {
+        //   "date": "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}",
+        //   "fromTime": "${fromTime.hour}:${fromTime.minute}",
+        //   "outDate": "${toTime.hour}:${toTime.minute}",
+        //   "reason": reason.text,
+        //   "granted": false,
+        //   "qrCode": null,
+        // },
+        body: map);
+    print(response.body);
+    print(response.statusCode);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var data = ProfileEntity.fromJson(
+        json.decode(response.body),
+      );
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+          (route) => false);
+
+      return ProfileEntity.fromJson(
+        json.decode(response.body),
+      );
+    } else {
+      Navigator.pop(context);
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(
+                json.decode(response.body)["detail"],
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    child: Text("Ok"))
+              ],
+            );
+          });
+      throw Exception('Failed to load data!');
+    }
+  }
+
+  TextEditingController firstName = TextEditingController();
+  TextEditingController lastName = TextEditingController();
+  TextEditingController rollNo = TextEditingController();
+  TextEditingController branch = TextEditingController();
+  TextEditingController studentPhone = TextEditingController();
+  TextEditingController parentPhone = TextEditingController();
+
+  bool hosteler = false;
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -113,6 +191,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     color: Color(0xffCAF0F8),
                                   ),
                                   child: TextFormField(
+                                    controller: firstName,
                                     decoration: InputDecoration(
                                       hintText: "User Name",
                                       hintStyle: TextStyle(
@@ -158,6 +237,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     color: Color(0xffCAF0F8),
                                   ),
                                   child: TextFormField(
+                                    controller: rollNo,
                                     decoration: InputDecoration(
                                       hintText: "20211A6604",
                                       hintStyle: TextStyle(
@@ -203,6 +283,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     color: Color(0xffCAF0F8),
                                   ),
                                   child: TextFormField(
+                                    controller: branch,
                                     decoration: InputDecoration(
                                       hintText: "CSM",
                                       hintStyle: TextStyle(
@@ -248,6 +329,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     color: Color(0xffCAF0F8),
                                   ),
                                   child: TextFormField(
+                                    controller: studentPhone,
                                     decoration: InputDecoration(
                                       hintText: "9010529965",
                                       hintStyle: TextStyle(
@@ -293,6 +375,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     color: Color(0xffCAF0F8),
                                   ),
                                   child: TextFormField(
+                                    controller: parentPhone,
                                     decoration: InputDecoration(
                                       hintText: "9963194190",
                                       hintStyle: TextStyle(
@@ -370,14 +453,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ],
                                     color: Color(0xff030359),
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      "Update",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontFamily: "Lato",
-                                        fontWeight: FontWeight.w600,
+                                  child: MaterialButton(
+                                    onPressed: () {
+                                      editProfile();
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        "Update",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontFamily: "Lato",
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
                                   ),

@@ -215,10 +215,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        PermissionDetailsScreen()),
+                                                        PermissionDetailsScreen(
+                                                          id: '',
+                                                        )),
                                                 (route) => true);
                                           },
-                                          child: StudentRequestTile(),
+                                          child: StudentRequestTile(
+                                            date: '',
+                                            reason: '',
+                                          ),
                                         ));
                                   }),
                             )

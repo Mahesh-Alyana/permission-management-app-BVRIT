@@ -70,6 +70,7 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                         color: Color(0xffffffff),
                       ),
                       child: TextFormField(
+                        controller: _emailTC,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -112,6 +113,7 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                         color: Color(0xffffffff),
                       ),
                       child: TextFormField(
+                        controller: _passwordTC,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -154,6 +156,7 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                         color: Color(0xffffffff),
                       ),
                       child: TextFormField(
+                        controller: _repasswordTC,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -345,6 +348,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                         color: Color(0xffffffff),
                       ),
                       child: TextFormField(
+                        controller: _rollNo,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -387,6 +391,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                         color: Color(0xffffffff),
                       ),
                       child: TextFormField(
+                        controller: _firstName,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -429,6 +434,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                         color: Color(0xffffffff),
                       ),
                       child: TextFormField(
+                        controller: _lastName,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,

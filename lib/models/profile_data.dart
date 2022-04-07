@@ -8,13 +8,13 @@ class ProfileEntity {
   bool? isActive;
   bool? isStaff;
   bool? isSuperuser;
-  Null? rollNo;
-  Null? parentPhone;
-  Null? studentPhone;
-  Null? branch;
+  String? rollNo;
+  num? parentPhone;
+  num? studentPhone;
+  String? branch;
   bool? hostler;
   String? grantedby;
-  Null? dp;
+  String? dp;
   String? typeOfAccount;
   List<Null>? groups;
   List<Null>? userPermissions;

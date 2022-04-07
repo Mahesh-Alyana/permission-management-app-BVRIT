@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
 class StudentRequestTile extends StatefulWidget {
-  const StudentRequestTile({Key? key}) : super(key: key);
+  String date;
+  String reason;
+  StudentRequestTile({
+    Key? key,
+    required this.date,
+    required this.reason,
+  }) : super(key: key);
 
   @override
   State<StudentRequestTile> createState() => _StudentRequestTileState();
@@ -23,8 +29,8 @@ class _StudentRequestTileState extends State<StudentRequestTile> {
         boxShadow: [
           BoxShadow(
             color: Color(0x2d000000),
-            blurRadius: 35,
-            offset: Offset(0, 7.24),
+            blurRadius: 5,
+            offset: Offset(0, 0),
           ),
         ],
       ),
@@ -33,7 +39,7 @@ class _StudentRequestTileState extends State<StudentRequestTile> {
           Align(
             alignment: Alignment.center,
             child: Text(
-              "23-03-2022",
+              "${widget.date}",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 25,
@@ -44,24 +50,43 @@ class _StudentRequestTileState extends State<StudentRequestTile> {
           ),
           SizedBox(
             width: width * 0.82,
-            child: Wrap(children: [
-              Text(
-                "Reason :",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.black,
-                ),
-                maxLines: 4,
-              ),
-            ]),
+            height: height * 0.08,
+            child: RichText(
+              text: TextSpan(
+                  text: 'Reason :',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '${widget.reason}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ]),
+            ),
+            // child: Row(children: [
+            //   Text(
+            //     "Reason :",
+            //     style: TextStyle(
+            //       fontSize: 15,
+            //       fontWeight: FontWeight.w700,
+            //       color: Colors.black,
+            //     ),
+            //   ),
+            //   Text(
+            //     "${widget.reason}",
+            //     style: TextStyle(
+            //       fontSize: 10,
+            //       color: Colors.black,
+            //     ),
+            //     maxLines: 4,
+            //   ),
+            // ]),
           )
         ],
       ),

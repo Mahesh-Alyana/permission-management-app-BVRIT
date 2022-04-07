@@ -1,3 +1,4 @@
+import 'package:bvrit/screens/students/auth/login_screen.dart';
 import 'package:bvrit/screens/students/granted_screen.dart';
 import 'package:bvrit/screens/students/permission_details.dart';
 import 'package:bvrit/screens/students/profile_screen.dart';
@@ -5,8 +6,11 @@ import 'package:bvrit/screens/students/request_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../main.dart';
+import '../../providers/profile_details_repository.dart';
 import '../../widgets/requesttile.dart';
 import 'edit_profile_screen.dart';
 
@@ -18,8 +22,29 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  var _init = true;
+  var _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_init) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<ProfileProvider>(context).getProductList().then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _init = false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    var profile = Provider.of<ProfileProvider>(context).profile;
+
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -114,12 +139,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 SizedBox(
                                   height: 17,
                                 ),
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.only(left: 8.0),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      "Mahesh Alyana",
+                                      "${profile.firstName} ${profile.lastName} ",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 16,
@@ -147,12 +172,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 SizedBox(
                                   height: 17,
                                 ),
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.only(left: 8.0),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      "20211A6604",
+                                      "${profile.rollNo}",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 16,
@@ -180,12 +205,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 SizedBox(
                                   height: 17,
                                 ),
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.only(left: 8.0),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      "CSM",
+                                      "${profile.branch}",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 16,
@@ -213,12 +238,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 SizedBox(
                                   height: 17,
                                 ),
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.only(left: 8.0),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      "9010529965",
+                                      "${profile.studentPhone}",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 16,
@@ -246,12 +271,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 SizedBox(
                                   height: 17,
                                 ),
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.only(left: 8.0),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      "9963194190",
+                                      "${profile.parentPhone}",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 16,
@@ -279,12 +304,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 SizedBox(
                                   height: 17,
                                 ),
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.only(left: 8.0),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      "Day Scholar",
+                                      profile.hostler == false
+                                          ? "Day Scholar"
+                                          : "Hosteler",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 16,
@@ -311,14 +338,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                     color: Color(0xff030359),
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      "Sign out",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontFamily: "Lato",
-                                        fontWeight: FontWeight.w600,
+                                  child: MaterialButton(
+                                    onPressed: () async {
+                                      SharedPreferences sharedPreferences =
+                                          await SharedPreferences.getInstance();
+                                      sharedPreferences.remove("token");
+                                      Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginScreen()),
+                                          (route) => false);
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        "Sign out",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontFamily: "Lato",
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
                                   ),

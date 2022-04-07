@@ -1,8 +1,11 @@
+import 'package:bvrit/providers/product_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 class PermissionDetailsScreen extends StatefulWidget {
-  const PermissionDetailsScreen({Key? key}) : super(key: key);
+  String id;
+  PermissionDetailsScreen({Key? key, required this.id}) : super(key: key);
 
   @override
   State<PermissionDetailsScreen> createState() =>
@@ -10,10 +13,33 @@ class PermissionDetailsScreen extends StatefulWidget {
 }
 
 class _PermissionDetailsScreenState extends State<PermissionDetailsScreen> {
+  var _init = true;
+  var _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_init) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<PermissionProvider>(context)
+          .getProductList(widget.id)
+          .then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _init = false;
+  }
+
   bool _isDayScholar = true;
   bool _isHosteler = false;
   @override
   Widget build(BuildContext context) {
+    var permission = Provider.of<PermissionProvider>(context).product;
+
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -67,17 +93,17 @@ class _PermissionDetailsScreenState extends State<PermissionDetailsScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 8.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "28-03-2022",
+                        "${permission.date}",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                           fontFamily: "Lato",
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
@@ -100,17 +126,17 @@ class _PermissionDetailsScreenState extends State<PermissionDetailsScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 8.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "10:30 am",
+                        "${permission.fromTime}",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                           fontFamily: "Lato",
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
@@ -133,17 +159,17 @@ class _PermissionDetailsScreenState extends State<PermissionDetailsScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 8.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "10:30 am",
+                        "${permission.outDate}",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                           fontFamily: "Lato",
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
@@ -166,17 +192,17 @@ class _PermissionDetailsScreenState extends State<PermissionDetailsScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 8.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Illness",
+                        "${permission.reason}",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                           fontFamily: "Lato",
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
@@ -184,36 +210,36 @@ class _PermissionDetailsScreenState extends State<PermissionDetailsScreen> {
                   SizedBox(
                     height: 20,
                   ),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "PROOF(If any)",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "prescript.png",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: "Lato",
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  )
+                  // const Align(
+                  //   alignment: Alignment.centerLeft,
+                  //   child: Text(
+                  //     "PROOF(If any)",
+                  //     style: TextStyle(
+                  //       color: Colors.black,
+                  //       fontSize: 18,
+                  //       fontFamily: "Lato",
+                  //       fontWeight: FontWeight.w600,
+                  //     ),
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 10,
+                  // ),
+                  // Padding(
+                  //   padding: EdgeInsets.only(left: 8.0),
+                  //   child: Align(
+                  //     alignment: Alignment.centerLeft,
+                  //     child: Text(
+                  //       "${permission.attachment}",
+                  //       style: TextStyle(
+                  //         color: Colors.black,
+                  //         fontSize: 16,
+                  //         fontFamily: "Lato",
+                  //         fontWeight: FontWeight.w500,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // )
                 ],
               ),
             ),

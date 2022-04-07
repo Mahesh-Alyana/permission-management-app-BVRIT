@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/api_services.dart';
 import '../models/permission_entity.dart';
@@ -16,11 +17,17 @@ class RequestedPermissionListProvider extends ChangeNotifier {
   }
 
   Future<void> getProductList(String roll_number) async {
-    var response = await http.get(Uri.parse(
-        '${Api.host}/masterfilters/?roll_number=$roll_number&granted=False'));
-
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String token = sharedPreferences.getString('token').toString();
+    var response = await http.get(
+        Uri.parse(
+            '${Api.host}/granted_roll/?student_roll=$roll_number&granted=false'),
+        headers: {
+          "Authorization": "JWT $token",
+        });
+    print(response.body);
     List<PermissionEntity> productList = [];
-    final responseData = json.decode(response.body) as List<dynamic>;
+    final responseData = json.decode(response.body) as List;
 
     for (int i = 0; i < responseData.length; i++) {
       PermissionEntity repo = PermissionEntity(
@@ -53,11 +60,17 @@ class GrantedPermissionListProvider extends ChangeNotifier {
   }
 
   Future<void> getProductList(String roll_number) async {
-    var response = await http.get(Uri.parse(
-        '${Api.host}/masterfilters/?roll_number=$roll_number&granted=True'));
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String token = sharedPreferences.getString('token').toString();
+    var response = await http.get(
+        Uri.parse(
+            '${Api.host}/granted_roll/?student_roll=$roll_number&granted=true'),
+        headers: {
+          "Authorization": "JWT $token",
+        });
 
     List<PermissionEntity> productList = [];
-    final responseData = json.decode(response.body) as List<dynamic>;
+    final responseData = json.decode(response.body) as List;
 
     for (int i = 0; i < responseData.length; i++) {
       PermissionEntity repo = PermissionEntity(
@@ -70,7 +83,7 @@ class GrantedPermissionListProvider extends ChangeNotifier {
         outDate: responseData[i]['out_date'],
         qrCode: responseData[i]['qr_code'],
         reason: responseData[i]['reason'],
-        rollNumber: responseData[i]['roll_number'],
+        studentRoll: responseData[i]['student_roll'],
       );
 
       productList.add(repo);
@@ -90,7 +103,12 @@ class PermissionProvider extends ChangeNotifier {
   }
 
   Future<void> getProductList(String id) async {
-    var response = await http.get(Uri.parse('${Api.host}/permission/$id'));
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String token = sharedPreferences.getString('token').toString();
+    var response = await http.get(
+      Uri.parse('${Api.host}/permission/$id'),
+      headers: {"Authorization": "JWT $token"},
+    );
 
     final responseData = json.decode(response.body);
 

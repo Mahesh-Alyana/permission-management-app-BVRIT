@@ -1,18 +1,20 @@
 class PermissionEntity {
   int? id;
-  String? rollNumber;
+  int? rollNumber;
+  String? studentRoll;
   String? date;
   String? fromTime;
   String? outDate;
   String? reason;
-  Null? attachment;
+  String? attachment;
   bool? granted;
   String? qrCode;
-  Null? slug;
+  String? slug;
 
   PermissionEntity(
       {this.id,
       this.rollNumber,
+      this.studentRoll,
       this.date,
       this.fromTime,
       this.outDate,
@@ -22,8 +24,9 @@ class PermissionEntity {
       this.qrCode,
       this.slug});
 
-  PermissionEntity.fromJson(Map<String, dynamic> json) {
+  PermissionEntity.fromJson(Map<dynamic, dynamic> json) {
     id = json['id'];
+    studentRoll = json['student_roll'];
     rollNumber = json['roll_number'];
     date = json['date'];
     fromTime = json['from_time'];
@@ -35,18 +38,19 @@ class PermissionEntity {
     slug = json['slug'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+  Map<dynamic, dynamic> toJson() {
+    final Map<dynamic, dynamic> data = new Map<dynamic, dynamic>();
     data['id'] = this.id;
-    data['roll_number'] = this.rollNumber;
+    data['student_roll'] = this.studentRoll;
     data['date'] = this.date;
     data['from_time'] = this.fromTime;
     data['out_date'] = this.outDate;
     data['reason'] = this.reason;
     data['attachment'] = this.attachment;
     data['granted'] = this.granted;
-    data['qr_code'] = this.qrCode;
+    // data['qr_code'] = this.qrCode;
     data['slug'] = this.slug;
+    data['roll_number'] = this.rollNumber;
     return data;
   }
 }

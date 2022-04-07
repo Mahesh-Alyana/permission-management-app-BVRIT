@@ -1,5 +1,13 @@
+import 'dart:convert';
+
+import 'package:bvrit/models/permission_entity.dart';
+import 'package:bvrit/screens/students/permission_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../api/api_services.dart';
+import 'package:http/http.dart' as http;
 
 class RequestScreen extends StatefulWidget {
   const RequestScreen({Key? key}) : super(key: key);
@@ -9,13 +17,104 @@ class RequestScreen extends StatefulWidget {
 }
 
 class _RequestScreenState extends State<RequestScreen> {
+  Future<PermissionEntity> requestPermission() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String token = sharedPreferences.getString('token').toString();
+    int id = int.parse(sharedPreferences.getString('id').toString());
+    String roll = sharedPreferences.getString('roll').toString();
+    String url = "${Api.host}/permission/";
+    PermissionEntity requestModel = PermissionEntity(
+      date: "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}",
+      fromTime: "${fromTime.hour}:${fromTime.minute}",
+      outDate: "${toTime.hour}:${toTime.minute}",
+      reason: reason.text,
+      granted: false,
+      studentRoll: "20211A6604",
+      rollNumber: id,
+    );
+    var map = new Map<dynamic, dynamic>();
+    map["date"] = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+    map["from_time"] = "${fromTime.hour}:${fromTime.minute}";
+    map["out_date"] = "${toTime.hour}:${toTime.minute}";
+    map["reason"] = reason.text;
+    map["roll_number"] = id;
+    map["student_roll"] = roll;
+    map["granted"] = "false";
+    map["phone"] = 9963194190;
+    // map["qrCode"] = null;
+    final response = await http.post(Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          "Authorization": "JWT $token",
+        },
+        body: jsonEncode(requestModel.toJson()));
+    //   body: {
+    //     "student_roll": "20211A6604",
+    //     "attachment": null,
+    //     "granted": false,
+    //     "rejected": false,
+    //     "slug": null,
+    //     "phone": 9876543210,
+    //     "date": "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}",
+    //     "fromTime": "${fromTime.hour}:${fromTime.minute}",
+    //     "outDate": "${toTime.hour}:${toTime.minute}",
+    //     "reason": reason.text,
+    //     "roll_number": id
+    //   },
+    // );
+    // body: map);
+    print(response.body);
+    print(response.statusCode);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      Map<String, dynamic> output = json.decode(response.body);
+      var data = PermissionEntity.fromJson(
+        json.decode(response.body),
+      );
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => PermissionDetailsScreen(
+                    id: '${data.id}',
+                  )),
+          (route) => false);
+
+      return PermissionEntity.fromJson(
+        json.decode(response.body),
+      );
+    } else {
+      Navigator.pop(context);
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(
+                json.decode(response.body)["detail"],
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    child: Text("Ok"))
+              ],
+            );
+          });
+      throw Exception('Failed to load data!');
+    }
+  }
+
   late DateTime pickedDate;
-  late TimeOfDay time;
+  late TimeOfDay fromTime;
+  late TimeOfDay toTime;
   @override
   void initState() {
     super.initState();
     pickedDate = DateTime.now();
-    time = TimeOfDay.now();
+    fromTime = TimeOfDay.now();
+    toTime = TimeOfDay.now();
   }
 
   _pickDate() async {
@@ -32,14 +131,27 @@ class _RequestScreenState extends State<RequestScreen> {
       });
   }
 
-  _pickTime() async {
-    TimeOfDay? t = await showTimePicker(context: context, initialTime: time);
+  _pickfromTime() async {
+    TimeOfDay? t =
+        await showTimePicker(context: context, initialTime: fromTime);
     if (t != null) {
       setState(() {
-        time = t;
+        fromTime = t;
       });
     }
   }
+
+  _picktoTime() async {
+    TimeOfDay? t =
+        await showTimePicker(context: context, initialTime: fromTime);
+    if (t != null) {
+      setState(() {
+        toTime = t;
+      });
+    }
+  }
+
+  TextEditingController reason = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -123,10 +235,10 @@ class _RequestScreenState extends State<RequestScreen> {
                         ),
                         child: Center(
                           child: ListTile(
-                            title:
-                                Text("From Time: ${time.hour}:${time.minute}"),
+                            title: Text(
+                                "From Time: ${fromTime.hour}:${fromTime.minute}"),
                             trailing: const Icon(Icons.keyboard_arrow_down),
-                            onTap: _pickTime,
+                            onTap: _pickfromTime,
                           ),
                         ),
                       ),
@@ -150,9 +262,9 @@ class _RequestScreenState extends State<RequestScreen> {
                         child: Center(
                           child: ListTile(
                             title: Text(
-                                "To Time: ${time.hour}:${time.minute}              (optional)"),
+                                "To Time: ${toTime.hour}:${toTime.minute}              (optional)"),
                             trailing: const Icon(Icons.keyboard_arrow_down),
-                            onTap: _pickTime,
+                            onTap: _picktoTime,
                           ),
                         ),
                       ),
@@ -186,6 +298,7 @@ class _RequestScreenState extends State<RequestScreen> {
                           color: Color(0xffCAF0F8),
                         ),
                         child: TextFormField(
+                          controller: reason,
                           maxLines: 5,
                           decoration: InputDecoration(
                             hintText: "Reason",
@@ -205,55 +318,55 @@ class _RequestScreenState extends State<RequestScreen> {
                       SizedBox(
                         height: 10,
                       ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: [
-                            Text(
-                              "PROOF",
-                              style: TextStyle(
-                                  fontFamily: 'Barlow',
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: width * 0.038,
-                                  color: Color(0xff000000)),
-                            ),
-                            Text(
-                              "  (If any)",
-                              style: TextStyle(
-                                  fontFamily: 'Barlow',
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: width * 0.025,
-                                  color: Color(0xff000000)),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Row(
+                      //     children: [
+                      //       Text(
+                      //         "PROOF",
+                      //         style: TextStyle(
+                      //             fontFamily: 'Barlow',
+                      //             fontWeight: FontWeight.w800,
+                      //             fontSize: width * 0.038,
+                      //             color: Color(0xff000000)),
+                      //       ),
+                      //       Text(
+                      //         "  (If any)",
+                      //         style: TextStyle(
+                      //             fontFamily: 'Barlow',
+                      //             fontWeight: FontWeight.w400,
+                      //             fontSize: width * 0.025,
+                      //             color: Color(0xff000000)),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       SizedBox(
                         height: 20,
                       ),
-                      Container(
-                        height: height * 0.07,
-                        width: width * 0.85,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1,
-                            color: Color(0xff03045e),
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                          color: Color(0xffCAF0F8),
-                        ),
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                              width: width * 0.3,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                // borderRadius: BorderRadius.circular(40),
-                                color: Color(0x727abbea),
-                              ),
-                              child: Icon(Icons.file_upload_outlined)),
-                        ),
-                      )
+                      // Container(
+                      //   height: height * 0.07,
+                      //   width: width * 0.85,
+                      //   decoration: BoxDecoration(
+                      //     border: Border.all(
+                      //       width: 1,
+                      //       color: Color(0xff03045e),
+                      //     ),
+                      //     borderRadius: BorderRadius.circular(8),
+                      //     color: Color(0xffCAF0F8),
+                      //   ),
+                      //   child: GestureDetector(
+                      //     onTap: () {},
+                      //     child: Container(
+                      //         width: width * 0.3,
+                      //         height: 35,
+                      //         decoration: BoxDecoration(
+                      //           // borderRadius: BorderRadius.circular(40),
+                      //           color: Color(0x727abbea),
+                      //         ),
+                      //         child: Icon(Icons.file_upload_outlined)),
+                      //   ),
+                      // )
                     ],
                   ),
                 ),
@@ -275,7 +388,9 @@ class _RequestScreenState extends State<RequestScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: MaterialButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        requestPermission();
+                      },
                       child: const Text(
                         "REQUEST FOR PERMISSION",
                         style: TextStyle(
