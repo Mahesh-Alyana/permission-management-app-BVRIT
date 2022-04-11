@@ -49,7 +49,7 @@ dependencies:
   uni_links_web: 
   shared_preferences: 
   cached_network_image: 
-
+  form_field_validator: 
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bvrit/screens/admins/home_screen.dart';
 import 'package:bvrit/screens/students/auth/login_screen.dart';
 import 'package:bvrit/screens/students/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -33,13 +34,19 @@ class _SplashScreenState extends State<SplashScreen> {
     }
     // verify(deepLinkURL);
     getToken().whenComplete(() async {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      var type = sharedPreferences.getString("type").toString();
       Timer(
         const Duration(seconds: 2),
         () => Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    finalToken == null ? LoginScreen() : HomeScreen()),
+                builder: (context) => finalToken == null
+                    ? LoginScreen()
+                    : type == "student"
+                        ? HomeScreen()
+                        : AdminHomeScreen()),
             (route) => false),
       );
     });

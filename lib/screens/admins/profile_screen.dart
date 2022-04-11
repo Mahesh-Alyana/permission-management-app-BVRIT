@@ -30,7 +30,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         _isLoading = true;
       });
-      Provider.of<ProfileProvider>(context).getProductList().then((value) {
+      Provider.of<StudentProfileProvider>(context)
+          .getProductList()
+          .then((value) {
         setState(() {
           _isLoading = false;
         });
@@ -41,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var profile = Provider.of<ProfileProvider>(context).profile;
+    var profile = Provider.of<StudentProfileProvider>(context).profile;
 
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;

@@ -1,55 +1,67 @@
 class PermissionEntity {
   int? id;
-  int? rollNumber;
   String? studentRoll;
+  String? branch;
   String? date;
   String? fromTime;
   String? outDate;
   String? reason;
   String? attachment;
   bool? granted;
+  bool? rejected;
   String? qrCode;
   String? slug;
+  String? phone;
+  int? rollNumber;
 
   PermissionEntity(
       {this.id,
-      this.rollNumber,
       this.studentRoll,
+      this.branch,
       this.date,
       this.fromTime,
       this.outDate,
       this.reason,
       this.attachment,
       this.granted,
+      this.rejected,
       this.qrCode,
-      this.slug});
+      this.slug,
+      this.phone,
+      this.rollNumber});
 
-  PermissionEntity.fromJson(Map<dynamic, dynamic> json) {
+  PermissionEntity.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     studentRoll = json['student_roll'];
-    rollNumber = json['roll_number'];
+    branch = json['branch'];
     date = json['date'];
     fromTime = json['from_time'];
     outDate = json['out_date'];
     reason = json['reason'];
     attachment = json['attachment'];
     granted = json['granted'];
+    rejected = json['rejected'];
     qrCode = json['qr_code'];
     slug = json['slug'];
+    phone = json['phone'];
+    rollNumber = json['roll_number'];
   }
 
-  Map<dynamic, dynamic> toJson() {
-    final Map<dynamic, dynamic> data = new Map<dynamic, dynamic>();
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['student_roll'] = this.studentRoll;
+    data['branch'] = this.branch;
     data['date'] = this.date;
     data['from_time'] = this.fromTime;
     data['out_date'] = this.outDate;
     data['reason'] = this.reason;
     data['attachment'] = this.attachment;
     data['granted'] = this.granted;
-    // data['qr_code'] = this.qrCode;
+    data['rejected'] = this.rejected;
+    data['qr_code'] = this.qrCode;
     data['slug'] = this.slug;
+    data['phone'] = this.phone;
     data['roll_number'] = this.rollNumber;
     return data;
   }
