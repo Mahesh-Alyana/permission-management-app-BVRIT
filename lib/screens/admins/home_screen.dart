@@ -38,15 +38,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           _isLoading = false;
         });
       });
-      Provider.of<RequestedPermissionListProvider>(context)
-          .getProductList("20211A6604")
+      Provider.of<AdminRequestedPermissionListProvider>(context)
+          .getProductList()
           .then((value) {
         setState(() {
           _isLoading = false;
         });
       });
-      Provider.of<GrantedPermissionListProvider>(context)
-          .getProductList("20211A6604")
+      Provider.of<AdminGrantedPermissionListProvider>(context)
+          .getProductList()
           .then((value) {
         setState(() {
           _isLoading = false;
@@ -144,9 +144,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   Widget build(BuildContext context) {
     var profile = Provider.of<StudentProfileProvider>(context).profile;
     var requested =
-        Provider.of<RequestedPermissionListProvider>(context).productList;
+        Provider.of<AdminRequestedPermissionListProvider>(context).productList;
     var granted =
-        Provider.of<GrantedPermissionListProvider>(context).productList;
+        Provider.of<AdminGrantedPermissionListProvider>(context).productList;
 
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
