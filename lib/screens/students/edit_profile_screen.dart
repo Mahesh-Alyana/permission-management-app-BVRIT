@@ -3,9 +3,13 @@ import 'dart:convert';
 import 'package:bvrit/models/profile_data.dart';
 import 'package:bvrit/screens/students/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../api/api_services.dart';
 import 'package:http/http.dart' as http;
+
+import '../../api/profileservices.dart';
+import '../../providers/profile_details_repository.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -20,40 +24,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String token = sharedPreferences.getString('token').toString();
     String password = sharedPreferences.getString('password').toString();
     String url = "${Api.host}/auth/users/me/";
-
-    var map = new Map<dynamic, dynamic>();
-    map["first_name"] = firstName.text;
-    map["last_name"] = lastName.text;
-    map["roll_no"] = rollNo.text;
-    map["branch"] = branch.text;
-    map["hosteler"] = hosteler;
-    // map["dp"] = ;
-    map["parent_phone"] = parentPhone.text;
-    map["student_phone"] = studentPhone.text;
-    map["password"] = password;
-    // map["granted"] = "false";
-    // map["qrCode"] = "null";
-    final response = await http.post(Uri.parse(url),
+    ProfileEntity requestModel = ProfileEntity(
+      firstName: firstName.text,
+      lastName: lastName.text,
+      rollNo: rollNo.text,
+      branch: branch.text,
+      hostler: hosteler,
+      parentPhone: int.parse("${parentPhone.text}"),
+      studentPhone: int.parse("${studentPhone.text}"),
+    );
+    final response = await http.put(Uri.parse(url),
         headers: {
           // 'Content-Type': 'application/json',
           'Accept': 'application/json',
           "Authorization": "JWT $token",
         },
-        // body: jsonEncode(requestModel.toJson()));
-        // body: {
-        //   "date": "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}",
-        //   "fromTime": "${fromTime.hour}:${fromTime.minute}",
-        //   "outDate": "${toTime.hour}:${toTime.minute}",
-        //   "reason": reason.text,
-        //   "granted": false,
-        //   "qrCode": null,
-        // },
-        body: map);
+        body: jsonEncode(requestModel.toJson()));
     print(response.body);
     print(response.statusCode);
     if (response.statusCode == 200 || response.statusCode == 201) {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+
       var data = ProfileEntity.fromJson(
         json.decode(response.body),
+      );
+      sharedPreferences.setString(
+        "roll",
+        "${data.rollNo}",
+      );
+      sharedPreferences.setString(
+        "id",
+        "${data.id}",
+      );
+      sharedPreferences.setString(
+        "branch",
+        "${data.branch}",
       );
       Navigator.pushAndRemoveUntil(
           context,
@@ -87,6 +93,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  var _init = true;
+  var _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_init) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<ProfileProvider>(context).getProductList().then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _init = false;
+  }
+
   TextEditingController firstName = TextEditingController();
   TextEditingController lastName = TextEditingController();
   TextEditingController rollNo = TextEditingController();
@@ -98,6 +123,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var profile = Provider.of<ProfileProvider>(context).profile;
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -192,8 +218,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   child: TextFormField(
                                     controller: firstName,
+                                    initialValue:
+                                        "${profile.firstName} ${profile.lastName}",
                                     decoration: InputDecoration(
-                                      hintText: "User Name",
+                                      hintText: "Username",
                                       hintStyle: TextStyle(
                                           fontFamily: 'Barlow',
                                           fontWeight: FontWeight.w400,
@@ -238,8 +266,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   child: TextFormField(
                                     controller: rollNo,
+                                    initialValue: "${profile.rollNo}",
                                     decoration: InputDecoration(
-                                      hintText: "20211A6604",
+                                      hintText: "Roll number",
                                       hintStyle: TextStyle(
                                           fontFamily: 'Barlow',
                                           fontWeight: FontWeight.w400,
@@ -284,8 +313,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   child: TextFormField(
                                     controller: branch,
+                                    initialValue: "${profile.branch}",
                                     decoration: InputDecoration(
-                                      hintText: "CSM",
+                                      hintText: "Branch",
                                       hintStyle: TextStyle(
                                           fontFamily: 'Barlow',
                                           fontWeight: FontWeight.w400,
@@ -330,8 +360,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   child: TextFormField(
                                     controller: studentPhone,
+                                    initialValue: "${profile.studentPhone}",
                                     decoration: InputDecoration(
-                                      hintText: "9010529965",
+                                      hintText: "Student's contact number",
                                       hintStyle: TextStyle(
                                           fontFamily: 'Barlow',
                                           fontWeight: FontWeight.w400,
@@ -376,8 +407,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   child: TextFormField(
                                     controller: parentPhone,
+                                    initialValue: "${profile.parentPhone}",
                                     decoration: InputDecoration(
-                                      hintText: "9963194190",
+                                      hintText: "Parent's contact number",
                                       hintStyle: TextStyle(
                                           fontFamily: 'Barlow',
                                           fontWeight: FontWeight.w400,
@@ -444,20 +476,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   height: 51,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(30),
-                                    boxShadow: [
+                                    boxShadow: const [
                                       BoxShadow(
                                         color: Color(0x3f000000),
                                         blurRadius: 4,
                                         offset: Offset(0, 4),
                                       ),
                                     ],
-                                    color: Color(0xff030359),
+                                    color: const Color(0xff030359),
                                   ),
                                   child: MaterialButton(
                                     onPressed: () {
                                       editProfile();
                                     },
-                                    child: Center(
+                                    child: const Center(
                                       child: Text(
                                         "Update",
                                         style: TextStyle(

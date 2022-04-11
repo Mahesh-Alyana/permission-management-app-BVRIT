@@ -22,6 +22,7 @@ class _RequestScreenState extends State<RequestScreen> {
     String token = sharedPreferences.getString('token').toString();
     int id = int.parse(sharedPreferences.getString('id').toString());
     String roll = sharedPreferences.getString('roll').toString();
+    String branch = sharedPreferences.getString('branch').toString();
     String url = "${Api.host}/permission/";
     PermissionEntity requestModel = PermissionEntity(
       date: "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}",
@@ -29,19 +30,10 @@ class _RequestScreenState extends State<RequestScreen> {
       outDate: "${toTime.hour}:${toTime.minute}",
       reason: reason.text,
       granted: false,
-      studentRoll: "20211A6604",
+      studentRoll: roll,
       rollNumber: id,
+      branch: branch,
     );
-    var map = new Map<dynamic, dynamic>();
-    map["date"] = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
-    map["from_time"] = "${fromTime.hour}:${fromTime.minute}";
-    map["out_date"] = "${toTime.hour}:${toTime.minute}";
-    map["reason"] = reason.text;
-    map["roll_number"] = id;
-    map["student_roll"] = roll;
-    map["granted"] = "false";
-    map["phone"] = 9963194190;
-    // map["qrCode"] = null;
     final response = await http.post(Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',

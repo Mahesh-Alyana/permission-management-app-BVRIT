@@ -41,6 +41,10 @@ class RequestedPermissionListProvider extends ChangeNotifier {
         qrCode: responseData[i]['qr_code'],
         reason: responseData[i]['reason'],
         rollNumber: responseData[i]['roll_number'],
+        branch: responseData[i]['branch'],
+        phone: responseData[i]['phone'],
+        studentRoll: responseData[i]['student_roll'],
+        rejected: responseData[i]['rejected'],
       );
 
       productList.add(repo);
@@ -83,7 +87,11 @@ class GrantedPermissionListProvider extends ChangeNotifier {
         outDate: responseData[i]['out_date'],
         qrCode: responseData[i]['qr_code'],
         reason: responseData[i]['reason'],
+        rollNumber: responseData[i]['roll_number'],
+        branch: responseData[i]['branch'],
+        phone: responseData[i]['phone'],
         studentRoll: responseData[i]['student_roll'],
+        rejected: responseData[i]['rejected'],
       );
 
       productList.add(repo);
@@ -123,6 +131,10 @@ class PermissionProvider extends ChangeNotifier {
       qrCode: responseData['qr_code'],
       reason: responseData['reason'],
       rollNumber: responseData['roll_number'],
+      branch: responseData['branch'],
+      phone: responseData['phone'],
+      studentRoll: responseData['student_roll'],
+      rejected: responseData['rejected'],
     );
 
     _product = repo;

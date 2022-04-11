@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:bvrit/api/profileservices.dart';
+import 'package:bvrit/screens/admins/home_screen.dart';
+import 'package:bvrit/screens/students/edit_profile_screen.dart';
 import 'package:bvrit/screens/students/home_screen.dart';
 import 'package:bvrit/screens/students/auth/signup.dart';
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../../../api/api_services.dart';
@@ -32,11 +35,14 @@ class _LoginScreenState extends State<LoginScreen> {
       Map<String, dynamic> output = json.decode(response.body);
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
+      sharedPreferences.setString(
+        "password",
+        password,
+      );
       sharedPreferences.setString("token", output['access']);
       print(output['access']);
       var profile = await ProfileDetails.profile();
       final responseData = json.decode(profile.body);
-
       ProfileEntity repo = ProfileEntity(
         id: responseData["id"],
         firstName: responseData['first_name'],
@@ -51,6 +57,15 @@ class _LoginScreenState extends State<LoginScreen> {
         studentPhone: responseData['student_phone'],
         typeOfAccount: responseData['type_of_account'],
       );
+      if (repo.branch == null ||
+          repo.parentPhone == null ||
+          repo.rollNo == null ||
+          repo.studentPhone == null) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => EditProfileScreen()),
+            (route) => false);
+      }
       sharedPreferences.setString(
         "roll",
         "${repo.rollNo}",
@@ -59,13 +74,23 @@ class _LoginScreenState extends State<LoginScreen> {
         "id",
         "${repo.id}",
       );
+
       sharedPreferences.setString(
-        "password",
-        password,
+        "branch",
+        "${repo.branch}",
+      );
+      sharedPreferences.setString(
+        "type",
+        "${repo.typeOfAccount}",
       );
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(
+              builder: (context) => repo.typeOfAccount == "student"
+                  ? HomeScreen()
+                  : repo.typeOfAccount == "admin"
+                      ? AdminHomeScreen()
+                      : HomeScreen()),
           (route) => false);
       return LoginResponseModel.fromJson(
         json.decode(response.body),
@@ -95,15 +120,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  TextEditingController _emailTC = TextEditingController();
-  TextEditingController _passwordTC = TextEditingController();
+  final TextEditingController _emailTC = TextEditingController();
+  final TextEditingController _passwordTC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
-        backgroundColor: Color(0xffA3DEEB),
+        backgroundColor: const Color(0xffA3DEEB),
         body: ListView(
           children: [
             Align(
@@ -117,6 +142,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       SizedBox(
                         height: height * 0.35,
+                        child: Center(
+                          child: Image.asset("assets/images/finallogo.png"),
+                        ),
                       ),
                       const Text(
                         "Log in to your account",
@@ -127,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       const Align(
@@ -153,6 +181,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: TextFormField(
                           controller: _emailTC,
+                          validator: (val) {
+                            MultiValidator([
+                              RequiredValidator(
+                                  errorText: "Email is required to login"),
+                              EmailValidator(
+                                  errorText:
+                                      "Enter a valid mail Id(check whether any extra character added)"),
+                            ]);
+                            if (val!.contains("@bvrit.ac.in")) {
+                              return "Please login with college mail id";
+                            }
+                          },
                           decoration: InputDecoration(
                             fillColor: Colors.white,
                             focusColor: Colors.white,
@@ -192,9 +232,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 50,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
-                          color: Color(0xffffffff),
+                          color: const Color(0xffffffff),
                         ),
                         child: TextFormField(
+                          validator: MultiValidator([
+                            RequiredValidator(
+                                errorText: "Enter password to login"),
+                          ]),
                           controller: _passwordTC,
                           decoration: InputDecoration(
                             fillColor: Colors.white,
@@ -216,17 +260,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 5,
                       ),
-                      // const Align(
-                      //   alignment: Alignment.centerLeft,
-                      //   child: Text(
-                      //     "Forgot password?",
-                      //     style: TextStyle(
-                      //       fontWeight: FontWeight.w600,
-                      //       color: Colors.black,
-                      //       fontSize: 16,
-                      //     ),
-                      //   ),
-                      // ),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Forgot password?",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                       SizedBox(
                         height: height * 0.15,
                       ),
@@ -258,7 +302,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     builder: (context) {
                                       return Center(
                                         child: CircularProgressIndicator(
-                                          color: Color(0xffff0000),
+                                          color:
+                                              Color.fromARGB(255, 0, 157, 255),
                                         ),
                                       );
                                     });

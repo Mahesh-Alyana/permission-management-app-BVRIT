@@ -2,6 +2,7 @@ import 'package:bvrit/screens/admins/profile_screen.dart';
 import 'package:bvrit/screens/students/auth/login_screen.dart';
 import 'package:bvrit/screens/students/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 
 import '../../../api/auth_api.dart';
 
@@ -35,6 +36,9 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                   children: [
                     SizedBox(
                       height: height * 0.3,
+                      child: Center(
+                        child: Image.asset("assets/images/finallogo.png"),
+                      ),
                     ),
                     const Text(
                       "Create an account",
@@ -71,6 +75,16 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                       ),
                       child: TextFormField(
                         controller: _emailTC,
+                        validator: (val) {
+                          MultiValidator([
+                            RequiredValidator(
+                                errorText: "Enter the college email"),
+                            EmailValidator(errorText: "Enter a valid mail id")
+                          ]);
+                          if (val!.contains("@bvrit.ac.in")) {
+                            return "Use college email";
+                          }
+                        },
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -114,6 +128,9 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                       ),
                       child: TextFormField(
                         controller: _passwordTC,
+                        validator: MultiValidator([
+                          RequiredValidator(errorText: "Enter a password"),
+                        ]),
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -157,6 +174,15 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                       ),
                       child: TextFormField(
                         controller: _repasswordTC,
+                        validator: (val) {
+                          MultiValidator([
+                            RequiredValidator(
+                                errorText: "Enter the password again"),
+                          ]);
+                          if (val == _passwordTC.text) {
+                            return "Enter the same password you have used above";
+                          }
+                        },
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -196,16 +222,18 @@ class _SignUpPasswordState extends State<SignUpPassword> {
                         borderRadius: BorderRadius.circular(30),
                         child: MaterialButton(
                           onPressed: () {
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SignUpDetails(
-                                    confirmPassword: _repasswordTC.text,
-                                    email: _emailTC.text,
-                                    password: _passwordTC.text,
+                            if (formkey.currentState!.validate()) {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SignUpDetails(
+                                      confirmPassword: _repasswordTC.text,
+                                      email: _emailTC.text,
+                                      password: _passwordTC.text,
+                                    ),
                                   ),
-                                ),
-                                (route) => true);
+                                  (route) => true);
+                            }
                           },
                           child: const Center(
                             child: Text(
@@ -313,6 +341,9 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                   children: [
                     SizedBox(
                       height: height * 0.3,
+                      child: Center(
+                        child: Image.asset("assets/images/finallogo.png"),
+                      ),
                     ),
                     const Text(
                       "Create an account",
@@ -392,6 +423,9 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                       ),
                       child: TextFormField(
                         controller: _firstName,
+                        validator: MultiValidator([
+                          RequiredValidator(errorText: "Enter a valid name")
+                        ]),
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           focusColor: Colors.white,
@@ -434,6 +468,9 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                         color: Color(0xffffffff),
                       ),
                       child: TextFormField(
+                        validator: MultiValidator([
+                          RequiredValidator(errorText: "Enter a valid name")
+                        ]),
                         controller: _lastName,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
@@ -452,7 +489,6 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                         ),
                       ),
                     ),
-
                     SizedBox(
                       height: height * 0.17,
                     ),
@@ -474,44 +510,27 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                         borderRadius: BorderRadius.circular(30),
                         child: MaterialButton(
                           onPressed: () async {
-                            // if (formkey.currentState!.validate()) {
-                            //   showDialog(
-                            //       barrierDismissible: false,
-                            //       useRootNavigator: false,
-                            //       context: context,
-                            //       builder: (context) {
-                            //         return Center(
-                            //           child: CircularProgressIndicator(
-                            //             color: Color(0xFFFF0000),
-                            //           ),
-                            //         );
-                            //       });
-                            //   await createUserSignup(
-                            //       widget.email,
-                            //       widget.password,
-                            //       widget.confirmPassword,
-                            //       _firstName.text,
-                            //       _lastName.text);
-                            // }
-                            showDialog(
-                                barrierDismissible: false,
-                                useRootNavigator: false,
-                                context: context,
-                                builder: (context) {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      color: Color(0xFFFF0000),
-                                    ),
-                                  );
-                                });
-                            await createUserSignup(
-                                widget.email,
-                                widget.password,
-                                widget.confirmPassword,
-                                _firstName.text,
-                                _lastName.text);
+                            if (formkey.currentState!.validate()) {
+                              showDialog(
+                                  barrierDismissible: false,
+                                  useRootNavigator: false,
+                                  context: context,
+                                  builder: (context) {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: Color.fromARGB(255, 0, 238, 255),
+                                      ),
+                                    );
+                                  });
+                              await createUserSignup(
+                                  widget.email,
+                                  widget.password,
+                                  widget.confirmPassword,
+                                  _firstName.text,
+                                  _lastName.text);
+                            }
                           },
-                          child: Center(
+                          child: const Center(
                             child: Text(
                               "Sign Up",
                               style: TextStyle(
@@ -525,9 +544,6 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                         ),
                       ),
                     ),
-                    // const SizedBox(
-                    //   height: 5,
-                    // ),
                     Expanded(
                       child: Align(
                         alignment: FractionalOffset.bottomCenter,

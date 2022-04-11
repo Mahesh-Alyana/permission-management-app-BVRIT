@@ -128,10 +128,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: ProfileProvider()),
+        ChangeNotifierProvider.value(value: StudentProfileProvider()),
         ChangeNotifierProvider.value(value: RequestedPermissionListProvider()),
         ChangeNotifierProvider.value(value: PermissionProvider()),
         ChangeNotifierProvider.value(value: GrantedPermissionListProvider()),
+        ChangeNotifierProvider.value(value: StudentProfileProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
