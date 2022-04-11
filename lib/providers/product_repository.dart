@@ -141,3 +141,97 @@ class PermissionProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class AdminRequestedPermissionListProvider extends ChangeNotifier {
+  // ignore: deprecated_member_use
+  late List<PermissionEntity> _productList = [];
+
+  List<PermissionEntity> get productList {
+    return [..._productList];
+  }
+
+  Future<void> getProductList() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String token = sharedPreferences.getString('token').toString();
+    String branch = sharedPreferences.getString('branch').toString();
+    var response = await http.get(
+        Uri.parse('${Api.host}/branchgrant/?branch=$branch&granted=false'),
+        headers: {
+          "Authorization": "JWT $token",
+        });
+    print(response.body);
+    List<PermissionEntity> productList = [];
+    final responseData = json.decode(response.body) as List;
+
+    for (int i = 0; i < responseData.length; i++) {
+      PermissionEntity repo = PermissionEntity(
+        date: responseData[i]['date'],
+        fromTime: responseData[i]['from_time'],
+        slug: responseData[i]['slug'],
+        granted: responseData[i]['granted'],
+        attachment: responseData[i]['attachment'],
+        id: responseData[i]['id'],
+        outDate: responseData[i]['out_date'],
+        qrCode: responseData[i]['qr_code'],
+        reason: responseData[i]['reason'],
+        rollNumber: responseData[i]['roll_number'],
+        branch: responseData[i]['branch'],
+        phone: responseData[i]['phone'],
+        studentRoll: responseData[i]['student_roll'],
+        rejected: responseData[i]['rejected'],
+      );
+
+      productList.add(repo);
+    }
+
+    _productList = productList;
+    notifyListeners();
+  }
+}
+
+class AdminGrantedPermissionListProvider extends ChangeNotifier {
+  // ignore: deprecated_member_use
+  late List<PermissionEntity> _productList = [];
+
+  List<PermissionEntity> get productList {
+    return [..._productList];
+  }
+
+  Future<void> getProductList() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String token = sharedPreferences.getString('token').toString();
+    String branch = sharedPreferences.getString('branch').toString();
+    var response = await http.get(
+        Uri.parse('${Api.host}/branchgrant/?branch=$branch&granted=true'),
+        headers: {
+          "Authorization": "JWT $token",
+        });
+
+    List<PermissionEntity> productList = [];
+    final responseData = json.decode(response.body) as List;
+
+    for (int i = 0; i < responseData.length; i++) {
+      PermissionEntity repo = PermissionEntity(
+        date: responseData[i]['date'],
+        fromTime: responseData[i]['from_time'],
+        slug: responseData[i]['slug'],
+        granted: responseData[i]['granted'],
+        attachment: responseData[i]['attachment'],
+        id: responseData[i]['id'],
+        outDate: responseData[i]['out_date'],
+        qrCode: responseData[i]['qr_code'],
+        reason: responseData[i]['reason'],
+        rollNumber: responseData[i]['roll_number'],
+        branch: responseData[i]['branch'],
+        phone: responseData[i]['phone'],
+        studentRoll: responseData[i]['student_roll'],
+        rejected: responseData[i]['rejected'],
+      );
+
+      productList.add(repo);
+    }
+
+    _productList = productList;
+    notifyListeners();
+  }
+}

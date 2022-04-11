@@ -133,6 +133,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         ChangeNotifierProvider.value(value: PermissionProvider()),
         ChangeNotifierProvider.value(value: GrantedPermissionListProvider()),
         ChangeNotifierProvider.value(value: StudentProfileProvider()),
+        ChangeNotifierProvider.value(
+            value: AdminGrantedPermissionListProvider()),
+        ChangeNotifierProvider.value(
+            value: AdminRequestedPermissionListProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
